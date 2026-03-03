@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Player_Movement : MonoBehaviour
@@ -8,16 +9,16 @@ public class Player_Movement : MonoBehaviour
 
     Rigidbody2D rb2D;
 
-    Vector2 Starting_Position;
-    
+    Vector2 CheckPoint_Position;
+
     void Start()
     {
-        rb2D = GetComponent<Rigidbody2D>(); 
+        rb2D = GetComponent<Rigidbody2D>();
     }
 
     private void Awake()
     {
-        Starting_Position = transform.position;
+        CheckPoint_Position = transform.position;
     }
 
     // Controles de Movimiento
@@ -27,7 +28,7 @@ public class Player_Movement : MonoBehaviour
         {
             rb2D.linearVelocity = new Vector2(Player_Speed, rb2D.linearVelocity.y);
         }
-     
+
         else if (Input.GetKey("a") || Input.GetKey("left"))
         {
             rb2D.linearVelocity = new Vector2(-Player_Speed, rb2D.linearVelocity.y);
@@ -42,20 +43,41 @@ public class Player_Movement : MonoBehaviour
         if (Input.GetKey("space") && Ground_Checker.Is_Grounded)
         {
 
-            rb2D.linearVelocity = new Vector2(rb2D.linearVelocity.x, Jump_Force);
+            float gravityDirection = Mathf.Sign(rb2D.gravityScale);
+            rb2D.linearVelocity = new Vector2(rb2D.linearVelocity.x, Jump_Force * gravityDirection);
 
         }
 
     }
-    
-    // Función de muerte
-    public void Die()
+
+    // Función de Checkpoint
+    public void Update_CheckPoint_Position(Vector2 pos)
     {
-
-        transform.position = Starting_Position;
-
+        CheckPoint_Position = pos;
     }
-    
+
+
+    public void Die() // Añadimos public para que el GameController pueda verla
+    {
+        // Así es como se activa un IEnumerator
+        StartCoroutine(Respawn(0f));
+    }
+
+    IEnumerator Respawn(float duration)
+    {
+        // 1. Esperamos el tiempo que le pases (ej. 0.5 segundos)
+        yield return new WaitForSeconds(duration);
+
+        // 2. Teletransportamos al jugador
+        transform.position = CheckPoint_Position;
+
+        // 3. Opcional: Si quieres que deje de caer al aparecer
+        rb2D.linearVelocity = Vector2.zero;
+    }
+
+
+
+
 
 
 
