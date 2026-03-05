@@ -10,7 +10,7 @@ public class Game_Controller : MonoBehaviour
         startPos = transform.position;
     }
 
-  private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         // Si el obstáculo toca al jugador (que tiene este script de Game_Controller)
         if (collision.CompareTag("Obstacle")) 
@@ -19,7 +19,6 @@ public class Game_Controller : MonoBehaviour
             GetComponent<Player_Movement>().Die();
         }
     }
-   
 
 }
 

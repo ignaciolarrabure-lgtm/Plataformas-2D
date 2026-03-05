@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player_Movement : MonoBehaviour
@@ -8,6 +9,12 @@ public class Player_Movement : MonoBehaviour
     public float Jump_Force = 0f;
 
     Rigidbody2D rb2D;
+
+    public bool Jump_Control = false;
+
+    public float Fall_Multiplier = 2.5f;
+
+    public float Low_Jump_Multiplier = 2f;
 
     Vector2 CheckPoint_Position;
 
@@ -47,6 +54,25 @@ public class Player_Movement : MonoBehaviour
             rb2D.linearVelocity = new Vector2(rb2D.linearVelocity.x, Jump_Force * gravityDirection);
 
         }
+
+        if (Jump_Control)
+        {
+            float gravityDir = Mathf.Sign(rb2D.gravityScale);
+
+            // 1. Multiplicador de caída (Para que no parezca que flota al caer)
+            // Si gravedad es normal (1) y caemos (y < 0) O gravedad invertida (-1) y caemos al techo (y > 0)
+            if ((gravityDir > 0 && rb2D.linearVelocity.y < 0) || (gravityDir < 0 && rb2D.linearVelocity.y > 0))
+            {
+                rb2D.linearVelocity += Vector2.up * Physics2D.gravity.y * (Fall_Multiplier - 1) * Time.deltaTime;
+            }
+            // 2. Salto corto (Si soltamos espacio antes de llegar al tope del salto)
+            // Si gravedad normal (1) y subimos (y > 0) O gravedad invertida (-1) y bajamos al techo (y < 0)
+            else if (((gravityDir > 0 && rb2D.linearVelocity.y > 0) || (gravityDir < 0 && rb2D.linearVelocity.y < 0)) && !Input.GetKey("space"))
+            {
+                rb2D.linearVelocity += Vector2.up * Physics2D.gravity.y * (Low_Jump_Multiplier - 1) * Time.deltaTime;
+            }
+        }
+
 
     }
 

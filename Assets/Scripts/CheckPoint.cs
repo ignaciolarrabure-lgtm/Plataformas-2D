@@ -15,7 +15,7 @@ public class CheckPoint : MonoBehaviour
         {
             gameController.Update_CheckPoint_Position(transform.position);
 
-            Debug.Log("CheckPoint activado");
+            Debug.Log("CheckPoint activated");
 
         }
     }
